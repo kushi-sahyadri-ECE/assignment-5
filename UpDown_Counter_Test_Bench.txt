@@ -1,0 +1,31 @@
+`include "counter_if.sv"
+`include "driver.sv"
+`include "monitor.sv"
+
+module testbench;
+    counter_if intf();
+
+    
+    initial begin
+        intf.clk = 0;
+        forever #5 intf.clk = ~intf.clk;
+    end
+
+    
+    up_down_counter dut (
+        .clk(intf.clk),
+        .rst(intf.rst),
+        .up(intf.up),
+        .count(intf.count)
+    );
+
+   
+    driver drv(intf);
+    monitor mon(intf);
+
+    initial begin
+        $dumpfile("counter.vcd");
+        $dumpvars(0, testbench);
+        #120 $finish;
+    end
+endmodule
